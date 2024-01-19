@@ -54,7 +54,10 @@ const KEY = `e9444685`;
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
@@ -70,11 +73,20 @@ export default function App() {
 
   function handleAddWatch(movie) {
     setWatched((watched) => [...watched, movie]);
+
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   useEffect(
     function () {
@@ -271,6 +283,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating;
+
   const {
     Title: title,
     Year: year,
@@ -284,6 +297,10 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
+  const [isTop, setIsTop] = useState(imdbRating > 8);
+  console.log(isTop);
+
+  // if(imdbRating > 8) return <p>Greatest Ever.</p>
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
