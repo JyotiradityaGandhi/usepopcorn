@@ -118,7 +118,7 @@ function Search({ query, setQuery }) {
     inputEl.current.focus();
     setQuery("");
   });
-  
+
   return (
     <input
       className="search"
